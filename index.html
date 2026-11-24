@@ -39,7 +39,7 @@
 </head>
 <body>
 <div id="loader"><div><div class="pct" id="pct">0%</div><div class="bar"><i id="bar"></i></div><div class="msg" id="msg">Plantando palmeras</div></div></div>
-<div id="hint">Arrastra para mirar &#xB7; toca los posters, la TV, a Luis y al cocodrilo</div>
+<div id="hint">Arrastra para mirar &#xB7; toca los posters, la TV, a Luis, las ranas y al cocodrilo</div>
 
 <div id="card" class="panel">
   <button class="x" aria-label="Cerrar">&#xD7;</button>
@@ -314,6 +314,58 @@ const tail=[]; let tp=cBody; for(let i=0;i<4;i++){ const s=new THREE.Group(); s.
 const legs=[]; [[-.3,.35],[.3,.35],[-.3,-.35],[.3,-.35]].forEach(([x,z])=>{ const l=new THREE.Group(); l.position.set(x,.2,z); cBody.add(l); box(.12,.2,.14,crocM,0,-.1,0,l); legs.push(l); });
 let snap=0; croc.traverse(o=>{ if(o.isMesh) o.userData.onClick=()=>{ snap=1.2; }; }); clickables.push(croc);
 
+// ---------- tropical tree frogs ----------
+const updaters=[];
+function frog({body=0x3ccf3c,side=0x2a5bd6,eye=0xff1a1a,foot=0xff8a1a,belly=0xf3f0d8,spots=null}={}){
+  const g=new THREE.Group(), bM=mat(body,{roughness:.35}), sM=mat(side,{roughness:.4}), fM=mat(foot,{roughness:.4}), wM=mat(belly,{roughness:.5});
+  const sph=(r,m,x,y,z,sx=1,sy=1,sz=1,p=g)=>{ const s=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),m); s.position.set(x,y,z); s.scale.set(sx,sy,sz); s.castShadow=true; p.add(s); return s; };
+  sph(.5,bM,0,.36,0,1,.6,1.2);                                   // body
+  sph(.47,wM,0,.27,.04,.9,.45,1.1);                              // pale belly
+  [-1,1].forEach(k=>sph(.2,sM,.4*k,.32,-.05,.5,.6,2.2));         // blue flank stripes
+  const throat=sph(.2,wM,0,.2,.48,1,.7,1);
+  const eyes=[]; [-1,1].forEach(k=>{ const e=new THREE.Group(); e.position.set(.27*k,.6,.42); g.add(e);
+    sph(.17,mat(eye,{roughness:.2,emissive:eye,emissiveIntensity:.25}),0,0,0,1,1,1,e);
+    const pu=new THREE.Mesh(new THREE.BoxGeometry(.04,.16,.02),mat(0x050505)); pu.position.set(0,0,.165); e.add(pu); eyes.push(e); });
+  box(.36,.02,.02,0x1a3a10,0,.4,.6,g);                           // mouth line
+  const legs=[];
+  [-1,1].forEach(k=>{ // back legs (folded) + front legs, with sticky orange toe pads
+    const back=new THREE.Group(); back.position.set(.42*k,.22,-.35); g.add(back); legs.push(back);
+    sph(.18,bM,0,0,0,1,.7,1.8,back);
+    [-1,0,1].forEach(i=>sph(.06,fM,.12*k+i*.07,-.12,.28-Math.abs(i)*.04,1,.6,1,back));
+    const front=new THREE.Group(); front.position.set(.36*k,.18,.34); g.add(front); legs.push(front);
+    sph(.09,bM,0,0,0,1,1.6,1,front);
+    [-1,0,1].forEach(i=>sph(.055,fM,.06*k+i*.06,-.13,.08,1,.6,1,front)); });
+  if(spots) for(let i=0;i<7;i++) sph(.07,mat(spots),(Math.random()-.5)*.6,.62,(Math.random()-.5)*.9,1,.3,1);
+  g.userData={eyes,throat,legs}; return g; }
+function idleFrog(f,phase){ const {eyes,throat}=f.userData;
+  return (t)=>{ const p=Math.max(0,Math.sin(t*5+phase)); throat.scale.set(1+p*.35,.7+p*.3,1);
+    const blink=(Math.sin(t*.7+phase*3)>.985)?.15:1; eyes.forEach(e=>e.scale.y=blink); }; }
+function makeHopper(f,baseY){ let hop=0; f.traverse(o=>{ if(o.isMesh) o.userData.onClick=()=>{ hop=1; }; }); clickables.push(f);
+  return (t,dt)=>{ if(hop>0){ hop=Math.max(0,hop-dt*1.6); f.position.y=baseY+Math.sin((1-hop)*Math.PI)*.35; f.rotation.y=f.userData.baseRot+(1-hop)*Math.PI*2; } }; }
+
+// 1) red-eyed tree frog slowly climbing up and down the palm next to the views sign
+const climber=new THREE.Group(); scene.add(climber);
+const onWall=new THREE.Group(); onWall.rotation.x=-Math.PI/2; climber.add(onWall);
+const cf=frog(); cf.scale.setScalar(.42); cf.rotation.z=Math.PI; onWall.add(cf);
+const palmBx=5.4, palmBz=-4.0, palmBh=4.6, palmBrot=-.3;
+let climbY=.6, climbDir=1, climbPause=0, heading=0;
+updaters.push(idleFrog(cf,0));
+updaters.push((t,dt)=>{
+  if(climbPause>0){ climbPause-=dt; heading+=((climbDir>0?0:Math.PI)-heading)*Math.min(1,dt*2.5); }
+  else { climbY+=climbDir*dt*.16; if(climbY>4.0){ climbY=4.0; climbDir=-1; climbPause=2.5; } if(climbY<.55){ climbY=.55; climbDir=1; climbPause=2.5; } }
+  const off=.0122*climbY*climbY, r=.2-.06*climbY/palmBh;                 // follow the trunk's gentle lean + taper
+  climber.position.set(palmBx+off*Math.cos(palmBrot), climbY, palmBz-off*Math.sin(palmBrot)+r+.03);
+  climber.rotation.z=heading;
+  const step=climbPause>0?0:Math.sin(t*5);                                // slow alternating leg steps
+  cf.userData.legs.forEach((l,i)=>{ l.rotation.x=(i%2?step:-step)*.35; });
+});
+cf.traverse(o=>{ if(o.isMesh) o.userData.onClick=()=>{ climbDir*=-1; climbPause=1.2; }; }); clickables.push(cf);
+
+// 2) two frogs chilling on top of the VISTAS EN YOUTUBE sign (red-eyed tree frog + blue dart frog)
+[[frog(),1.25,-.25,0],[frog({body:0x1f6fff,side:0x0a2a8a,eye:0x111111,foot:0x0b3ea8,belly:0x9fc4ff,spots:0x050a20}),-1.3,.3,2.1]].forEach(([f,x,rot,ph])=>{
+  f.scale.setScalar(.5); f.position.set(x,.63,0); f.rotation.y=rot; f.userData.baseRot=rot; sign.add(f);
+  updaters.push(idleFrog(f,ph)); updaters.push(makeHopper(f,.63)); });
+
 // ---------- lights ----------
 scene.add(new THREE.HemisphereLight(0xffd2b0,0x5a3a7a,.75));
 const sunL=new THREE.DirectionalLight(0xffb070,1.3); sunL.position.set(-8,10,-14); sunL.castShadow=true; sunL.shadow.mapSize.set(2048,2048);
@@ -385,6 +437,7 @@ function frame(){ const t=clock.getElapsedTime(), dt=Math.min(.05,t-last); last=
   const stride=Math.sin(t*6); legs.forEach((l,i)=>{ l.rotation.x=(i===0||i===3?stride:-stride)*.5; });
   tail.forEach((s,i)=>{ s.rotation.y=Math.sin(t*3-i*.7)*.25; }); cBody.rotation.y=Math.sin(t*3)*.06;
   if(snap>0){ snap-=dt; jaw.rotation.x=Math.abs(Math.sin(snap*14))*.6; } else jaw.rotation.x=(Math.sin(t*.8)>.96)?.35:0;
+  updaters.forEach(u=>u(t,dt));
   renderer.render(scene,camera); requestAnimationFrame(frame); }
 frame();
 addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
