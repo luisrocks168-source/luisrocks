@@ -39,7 +39,7 @@
 </head>
 <body>
 <div id="loader"><div><div class="pct" id="pct">0%</div><div class="bar"><i id="bar"></i></div><div class="msg" id="msg">Plantando palmeras</div></div></div>
-<div id="hint">Arrastra para mirar &#xB7; toca los posters, la TV, a Luis, las ranas y al cocodrilo</div>
+<div id="hint">Arrastra para mirar &#xB7; toca la arena para caminar &#xB7; toca los posters, la TV, las ranas y al cocodrilo</div>
 
 <div id="card" class="panel">
   <button class="x" aria-label="Cerrar">&#xD7;</button>
@@ -106,7 +106,7 @@ const sun=new THREE.Sprite(new THREE.SpriteMaterial({map:sunTex,fog:false,depthW
 // ---------- ocean ----------
 const oceanGeo=new THREE.PlaneGeometry(220,220,90,90);
 const ocean=new THREE.Mesh(oceanGeo,new THREE.MeshStandardMaterial({color:0x2a5e9e,roughness:.18,metalness:.35,emissive:0x40154f,emissiveIntensity:.35}));
-ocean.rotation.x=-Math.PI/2; ocean.position.y=-.12; scene.add(ocean);
+ocean.rotation.x=-Math.PI/2; ocean.position.y=-.38; scene.add(ocean);
 const oceanBase=oceanGeo.attributes.position.array.slice();
 
 // ---------- sand island ----------
@@ -119,7 +119,7 @@ const island=new THREE.Mesh(new THREE.ExtrudeGeometry(islandShape,{depth:.4,beve
 island.rotation.x=-Math.PI/2; island.position.y=-.65; island.receiveShadow=true; scene.add(island);
 // foam ring at the shoreline
 const foam=new THREE.Mesh(new THREE.RingGeometry(1,1.04,96),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.75}));
-foam.rotation.x=-Math.PI/2; foam.scale.set(8.95,7.5,1); foam.position.y=-.05; scene.add(foam);
+foam.rotation.x=-Math.PI/2; foam.scale.set(8.95,7.5,1); foam.position.y=-.2; scene.add(foam);
 
 // ---------- palm trees ----------
 const trunkM=mat(0x7a5634,{roughness:1}), trunkRing=mat(0x5e3f24,{roughness:1}), leafM=new THREE.MeshStandardMaterial({color:0x2f8f3f,roughness:.7,side:THREE.DoubleSide}), leafM2=new THREE.MeshStandardMaterial({color:0x3fae4d,roughness:.7,side:THREE.DoubleSide});
@@ -270,9 +270,10 @@ const tvGlow=new THREE.PointLight(0x8fb6ff,.7,4); tvGlow.position.set(4.3,2.1,1.
 // ---------- Luis (look from his photo + Christmas fit) ----------
 const luis=new THREE.Group(); luis.position.set(.9,0,-.3); scene.add(luis);
 const skin=mat(0xc68b62);
-box(.18,.75,.2,0x1b1f2a,-.11,.375,0,luis); box(.18,.75,.2,0x1b1f2a,.11,.375,0,luis);
-box(.2,.08,.28,0xffffff,-.11,.04,.04,luis); box(.2,.08,.28,0xffffff,.11,.04,.04,luis);
-box(.2,.02,.28,0xc8102e,-.11,.085,.04,luis); box(.2,.02,.28,0xc8102e,.11,.085,.04,luis);
+// legs hinge at the hip so he can walk
+const legs2=[-.11,.11].map(x=>{ const g=new THREE.Group(); g.position.set(x,.75,0); luis.add(g);
+  box(.18,.75,.2,0x1b1f2a,0,-.375,0,g); box(.2,.08,.28,0xffffff,0,-.71,.04,g); box(.2,.02,.28,0xc8102e,0,-.665,.04,g); return g; });
+const legL=legs2[0], legR=legs2[1];
 const swTex=canvasTex(256,320,(x)=>{ x.fillStyle='#b3121f'; x.fillRect(0,0,256,320); x.fillStyle='#0f6b34'; x.fillRect(0,40,256,34); x.fillRect(0,250,256,30);
   x.fillStyle='#fff'; for(let i=0;i<16;i++){ x.fillRect(i*16+4,44,8,8); x.fillRect(i*16+8,60,8,8); x.fillRect(i*16+4,254,8,8); x.fillRect(i*16+8,268,8,8); }
   const flake=(cx,cy,s)=>{ x.strokeStyle='#fff'; x.lineWidth=3; for(let a=0;a<3;a++){ const t=a*Math.PI/3; x.beginPath(); x.moveTo(cx-Math.cos(t)*s,cy-Math.sin(t)*s); x.lineTo(cx+Math.cos(t)*s,cy+Math.sin(t)*s); x.stroke(); } };
@@ -385,7 +386,15 @@ addEventListener('wheel',e=>{ tDist=Math.max(5,Math.min(18,tDist+e.deltaY*.006))
 // ---------- picking ----------
 const ray=new THREE.Raycaster(), mouse=new THREE.Vector2();
 function hit(e){ if(e.target!==renderer.domElement) return null; mouse.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1); ray.setFromCamera(mouse,camera); const h=ray.intersectObjects(clickables,true); return h.length?h[0].object:null; }
-function pick(e){ const o=hit(e); if(o&&o.userData.onClick) o.userData.onClick(); }
+// tap the sand -> Luis walks there (marker ring shows where)
+const walkTarget=new THREE.Vector3(.9,0,-.3); let walking=false, luisHeading=0;
+const marker=new THREE.Mesh(new THREE.RingGeometry(.22,.3,32),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false}));
+marker.rotation.x=-Math.PI/2; marker.position.y=.02; scene.add(marker);
+function walkTo(p){ let x=p.x, z=p.z; const k=Math.hypot(x/7.0,z/5.8); if(k>1){ x/=k; z/=k; }   // stay on the island
+  walkTarget.set(x,0,z); walking=true; marker.position.set(x,.02,z); marker.material.opacity=.9; marker.scale.setScalar(1); }
+function pick(e){ const o=hit(e); if(o&&o.userData.onClick){ o.userData.onClick(); return; }
+  if(e.target!==renderer.domElement) return;
+  const g=ray.intersectObject(island,false); if(g.length) walkTo(g[0].point); }
 let hovT=0; function hover(e){ const n=performance.now(); if(n-hovT<60) return; hovT=n; document.body.classList.toggle('hover',!!hit(e)); }
 
 // ---------- panels: card, music player, video ----------
@@ -428,7 +437,18 @@ function frame(){ const t=clock.getElapsedTime(), dt=Math.min(.05,t-last); last=
   palms.forEach((c,i)=>{ c.rotation.z=Math.sin(t*.9+i)*.05; c.rotation.x=Math.cos(t*.7+i)*.04; });
   flames.forEach(([f,l],i)=>{ f.scale.set(1,1+Math.sin(t*18+i*3)*.12+Math.random()*.08,1); l.intensity=.75+Math.random()*.3; });
   const beat=t*152/60*Math.PI*2; // Luis vibes at 152 BPM
-  head.rotation.x=Math.sin(beat)*.08; luis.rotation.y=Math.sin(t*.8)*.25; luis.position.y=Math.abs(Math.sin(beat/2))*.03;
+  head.rotation.x=Math.sin(beat)*.08;
+  const dx=walkTarget.x-luis.position.x, dz=walkTarget.z-luis.position.z, d=Math.hypot(dx,dz);
+  if(walking&&d>.05){
+    let want=Math.atan2(dx,dz), diff=want-luisHeading; diff=Math.atan2(Math.sin(diff),Math.cos(diff)); luisHeading+=diff*Math.min(1,dt*8);
+    const sp=Math.min(d,dt*1.7); luis.position.x+=dx/d*sp; luis.position.z+=dz/d*sp;
+    const sw=Math.sin(t*10); legL.rotation.x=sw*.55; legR.rotation.x=-sw*.55; armL.rotation.x=-sw*.5; armR.rotation.x=sw*.5;
+    luis.position.y=Math.abs(Math.cos(t*10))*.05; luis.rotation.y=luisHeading;
+  } else {
+    walking=false; legL.rotation.x*=.8; legR.rotation.x*=.8; armL.rotation.x*=.8; armR.rotation.x*=.8;
+    luis.rotation.y=luisHeading+Math.sin(t*.8)*.25; luis.position.y=Math.abs(Math.sin(beat/2))*.03;
+  }
+  marker.material.opacity=Math.max(0,marker.material.opacity-dt*.6); marker.scale.setScalar(1+(.9-marker.material.opacity)*.6);
   if(wave>0){ wave-=dt; armR.rotation.z=2.6+Math.sin(t*12)*.35; } else armR.rotation.z=Math.sin(beat/2)*.12;
   armL.rotation.z=-Math.sin(beat/2)*.12;
   ampL.material.emissiveIntensity=1.5+Math.sin(beat);
