@@ -74,6 +74,7 @@ const MUSIC = {
   appleArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/1c/57/aa/1c57aab3-c4fd-8a24-4d06-b7083d2a0ade/885288242478.jpg/600x600bb.jpg',
   youtubeId: 'V-500lsoBvs'                    // KONNICHIWA (Video Oficial)
 };
+const SHOT=new URLSearchParams(location.search).has("shot"); if(SHOT) document.getElementById("hint").remove();
 const fmt = n => Math.round(n).toLocaleString('en-US');
 
 // ---------- loader ----------
@@ -113,7 +114,7 @@ const sandTex=canvasTex(1024,1024,(x)=>{ x.fillStyle='#e9c98f'; x.fillRect(0,0,1
   for(let i=0;i<26000;i++){ const l=62+Math.random()*22; x.fillStyle=`hsl(38,55%,${l}%)`; x.fillRect(Math.random()*1024,Math.random()*1024,2,2); }
   x.strokeStyle='#d4ac6b55'; x.lineWidth=3; for(let i=0;i<18;i++){ x.beginPath(); const y=Math.random()*1024; x.moveTo(0,y); for(let k=0;k<=1024;k+=32) x.lineTo(k,y+Math.sin(k*.02+i)*10); x.stroke(); } });
 sandTex.wrapS=sandTex.wrapT=THREE.RepeatWrapping; sandTex.repeat.set(.12,.12);
-const islandShape=new THREE.Shape(); for(let i=0;i<=64;i++){ const a=i/64*Math.PI*2; const r=1+.06*Math.sin(a*5)+.04*Math.cos(a*9); const px=Math.cos(a)*8.4*r, pz=Math.sin(a)*7.0*r; i?islandShape.lineTo(px,pz):islandShape.moveTo(px,pz); }
+const islandShape=new THREE.Shape(); for(let i=0;i<64;i++){ const a=i/64*Math.PI*2; const r=1+.06*Math.sin(a*5)+.04*Math.cos(a*9); const px=Math.cos(a)*8.4*r, pz=Math.sin(a)*7.0*r; i?islandShape.lineTo(px,pz):islandShape.moveTo(px,pz); }
 const island=new THREE.Mesh(new THREE.ExtrudeGeometry(islandShape,{depth:.4,bevelEnabled:true,bevelSize:.6,bevelThickness:.25,bevelSegments:4}),mat(0xffffff,{map:sandTex,roughness:.95}));
 island.rotation.x=-Math.PI/2; island.position.y=-.65; island.receiveShadow=true; scene.add(island);
 // foam ring at the shoreline
@@ -420,7 +421,7 @@ const clock=new THREE.Clock(); let last=0;
 function frame(){ const t=clock.getElapsedTime(), dt=Math.min(.05,t-last); last=t;
   yaw+=(tYaw-yaw)*.08; pitch+=(tPitch-pitch)*.08; dist+=(tDist-dist)*.08;
   camera.position.set(target.x+Math.sin(yaw)*Math.cos(pitch)*dist,target.y+Math.sin(pitch)*dist,target.z+Math.cos(yaw)*Math.cos(pitch)*dist); camera.lookAt(target);
-  shown+=(goal-shown)*.04; if(Math.abs(goal-shown)<1) shown=goal; drawCounter(shown);
+  if(SHOT) shown=goal; shown+=(goal-shown)*.04; if(Math.abs(goal-shown)<1) shown=goal; drawCounter(shown);
   drawScreen(t); drawTV(t);
   const a=oceanGeo.attributes.position; for(let i=0;i<a.count;i++){ const x=oceanBase[i*3], y=oceanBase[i*3+1]; a.setZ(i,Math.sin(x*.35+t*1.2)*.08+Math.cos(y*.3+t*.9)*.08); } a.needsUpdate=true; oceanGeo.computeVertexNormals();
   foam.material.opacity=.5+Math.sin(t*1.5)*.25; foam.scale.set(8.95+Math.sin(t*1.5)*.12,7.5+Math.sin(t*1.5)*.1,1);
