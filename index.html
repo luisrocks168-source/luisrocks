@@ -50,7 +50,7 @@
     <dt>Suscriptores</dt><dd id="c-subs">&#x2014;</dd>
     <dt>Vistas totales</dt><dd id="c-views">&#x2014;</dd>
     <dt>Videos</dt><dd id="c-videos">&#x2014;</dd>
-    <dt>Status</dt><dd>En la jungla &#x1F334;</dd>
+    <dt>Status</dt><dd>Estudio Tropical &#x1F334;</dd>
   </dl>
   <div class="links">
     <a class="sp" href="https://open.spotify.com/artist/29CZrQcy62hjQLwfp1oZl0" target="_blank" rel="noopener">Spotify</a>
@@ -68,7 +68,7 @@
 (() => {
 const FALLBACK = { subs: 20400, views: 8609485, videos: 286 };
 const MUSIC = {
-  spotifyTrack: '5tC47NMTom57QuPXrMtpqD',   // #1 on Spotify: KONNICHIWA
+  spotifyAlbum: "4Cp2e5nRklE1uYIFw5WdL5",   // album AGUA (9 songs, KONNICHIWA is the #1 track)
   spotifyArt: 'https://i.scdn.co/image/ab67616d0000b273506ecea7fff91c4f3b52345e',
   appleEmbed: 'https://embed.music.apple.com/us/album/panam%C3%A1/6797576783?i=6797576791', // #2: Panama (w/ Axel Rodriguez)
   appleArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/1c/57/aa/1c57aab3-c4fd-8a24-4d06-b7083d2a0ade/885288242478.jpg/600x600bb.jpg',
@@ -185,7 +185,7 @@ const chair=new THREE.Group(); chair.position.set(-1.6,0,-1.05); chair.rotation.
 box(.6,.1,.6,0x111,0,.55,0,chair); box(.6,.75,.08,0x111,0,1.0,-.28,chair); cyl(.04,.04,.45,0x333,0,.3,0,chair); box(.6,.04,.08,0x333,0,.06,0,chair); box(.08,.04,.6,0x333,0,.06,0,chair);
 // tiki torches
 const flames=[];
-[[-3.6,-1.0],[0.9,-1.2],[-4.4,1.6],[4.6,-1.8]].forEach(([x,z])=>{ cyl(.04,.05,1.7,0x7a5634,x,.85,z,scene,8); cyl(.11,.08,.22,0x5e3f24,x,1.75,z,scene,8);
+[[-3.6,-1.0],[0.9,-1.2],[-3.4,3.4],[4.6,-1.8]].forEach(([x,z])=>{ cyl(.04,.05,1.7,0x7a5634,x,.85,z,scene,8); cyl(.11,.08,.22,0x5e3f24,x,1.75,z,scene,8);
   const f=new THREE.Mesh(new THREE.ConeGeometry(.09,.3,10),new THREE.MeshBasicMaterial({color:0xffa23a})); f.position.set(x,2.0,z); scene.add(f);
   const l=new THREE.PointLight(0xff8a2a,.9,4.5); l.position.set(x,2.1,z); scene.add(l); flames.push([f,l]); });
 
@@ -240,8 +240,7 @@ function pill(x,cx,cy,w,h,fill){ x.fillStyle=fill; x.beginPath(); x.moveTo(cx-w/
 function drawSpotify(x,img){ const g=x.createLinearGradient(0,0,0,720); g.addColorStop(0,'#1ed760'); g.addColorStop(1,'#0b3d1e'); x.fillStyle=g; x.fillRect(0,0,512,720);
   x.fillStyle='#000'; x.font='bold 46px Inter,sans-serif'; x.textAlign='center'; x.fillText('Spotify',256,64);
   if(img) x.drawImage(img,56,92,400,400); else { x.fillStyle='#0006'; x.fillRect(56,92,400,400); }
-  x.fillStyle='#fff'; x.font='bold 54px "Archivo Black",Inter,sans-serif'; x.fillText('KONNICHIWA',256,560);
-  x.font='600 26px Inter,sans-serif'; x.fillStyle='#e9ffe9'; x.fillText('#1 de Luis Sandoval',256,598);
+  x.fillStyle='#fff'; x.font="700 22px Inter,sans-serif"; x.fillStyle="#e9ffe9"; x.fillText("ALBUM CORRIDOS TROPICALES",256,522); x.fillStyle="#fff"; x.font="bold 58px \"Archivo Black\",Inter,sans-serif"; x.fillText("AGUA",256,580); x.font="600 22px Inter,sans-serif"; x.fillStyle="#e9ffe9"; x.fillText("Luis Sandoval",256,610);
   pill(x,256,657,340,66,'#000'); x.fillStyle='#1ed760'; x.font='bold 28px Inter,sans-serif'; x.fillText('\u25B6  TOCA PARA ESCUCHAR',256,667); }
 function drawApple(x,img){ const g=x.createLinearGradient(0,0,512,720); g.addColorStop(0,'#fa233b'); g.addColorStop(1,'#7a1fa2'); x.fillStyle=g; x.fillRect(0,0,512,720);
   x.fillStyle='#fff'; x.font='bold 44px Inter,sans-serif'; x.textAlign='center'; x.fillText('Apple Music',256,64);
@@ -249,8 +248,8 @@ function drawApple(x,img){ const g=x.createLinearGradient(0,0,512,720); g.addCol
   x.font='bold 54px "Archivo Black",Inter,sans-serif'; x.fillText('PANAM\u00C1',256,560);
   x.font='600 24px Inter,sans-serif'; x.fillStyle='#ffe3ea'; x.fillText('Axel Rodriguez & Luis Sandoval',256,598);
   pill(x,256,657,310,66,'#fff'); x.fillStyle='#fa233b'; x.font='bold 30px Inter,sans-serif'; x.fillText('PRESIONA AQU\u00CD',256,668); }
-poster(-5.0,-.6,.75,drawSpotify,()=>playSpotify(),MUSIC.spotifyArt);
-poster(-5.4,1.6,1.05,drawApple,()=>playApple(),MUSIC.appleArt);
+poster(-5.0,-.6,.75,drawSpotify,()=>{ focusOn(SPOTS.spotify); playSpotify(); },MUSIC.spotifyArt);
+poster(-5.4,1.6,1.05,drawApple,()=>{ focusOn(SPOTS.apple); playApple(); },MUSIC.appleArt);
 // YouTube TV on a bamboo stand (right side)
 const tv=new THREE.Group(); tv.position.set(4.9,0,.4); tv.rotation.y=-.95; scene.add(tv);
 cyl(.06,.06,1.5,0xc9a777,-.5,.75,0,tv,8); cyl(.06,.06,1.5,0xc9a777,.5,.75,0,tv,8); box(1.3,.06,.5,0xc9a777,0,1.5,0,tv);
@@ -266,6 +265,29 @@ function drawTV(t){ const {x}=tvTex.userData; x.fillStyle='#111'; x.fillRect(0,0
 const tvScreen=new THREE.Mesh(new THREE.PlaneGeometry(1.88,1.06),new THREE.MeshBasicMaterial({map:tvTex})); tvScreen.position.set(0,2.15,.065); tv.add(tvScreen);
 tv.traverse(o=>{ if(o.isMesh) o.userData.onClick=()=>playVideo(); }); clickables.push(tv);
 const tvGlow=new THREE.PointLight(0x8fb6ff,.7,4); tvGlow.position.set(4.3,2.1,1.0); scene.add(tvGlow);
+
+// ---------- focus spots: walk up to one and the camera zooms in on it ----------
+const SPOTS={
+  spotify:{pos:new THREE.Vector3(-5.0,1.95,-.6), yaw:.75,  w:1.5},
+  apple:  {pos:new THREE.Vector3(-5.4,1.95,1.6), yaw:1.05, w:1.5},
+  tv:     {pos:new THREE.Vector3(4.9,2.15,.4),   yaw:-.95, w:2.2},
+  views:  {pos:new THREE.Vector3(3.5,3.0,-4.25), yaw:-.05, w:4.2}
+};
+function fitDist(w){ const hf=2*Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.aspect); return Math.max(3.2,(w*1.35)/(2*Math.tan(hf/2))); }
+let camMode='free', focusSpot=null;
+function focusOn(s){ camMode='focus'; focusSpot=s; tYaw=s.yaw; tPitch=.14; tDist=fitDist(s.w); }
+
+// ---------- bouncing "CLICK" signs so visitors know what to tap ----------
+const clickSigns=[];
+function clickSign(text,bg,x,y,z,onClick){
+  const tex=canvasTex(640,256,(c)=>{ c.font='bold 46px Inter,sans-serif'; c.textAlign='center'; const w=Math.min(630,c.measureText(text).width+70);
+    pill(c,320,62,w,96,bg); c.lineWidth=5; c.strokeStyle='#fff'; c.fillStyle='#fff'; c.fillText(text,320,79);
+    c.fillStyle=bg; c.beginPath(); c.moveTo(270,130); c.lineTo(370,130); c.lineTo(320,210); c.closePath(); c.fill(); c.lineWidth=8; c.stroke(); });
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false,transparent:true})); sp.renderOrder=5;
+  sp.scale.set(1.8,.72,1); sp.position.set(x,y,z); scene.add(sp); sp.userData.onClick=onClick; clickables.push(sp); clickSigns.push({sp,y}); return sp; }
+clickSign('CLICK PARA ESCUCHAR','#1db954',-5.0,3.15,-.6,()=>{ focusOn(SPOTS.spotify); playSpotify(); });
+clickSign('CLICK PARA ESCUCHAR','#fa233b',-5.4,3.15,1.6,()=>{ focusOn(SPOTS.apple); playApple(); });
+clickSign('CLICK PARA VER','#e0302f',4.9,3.2,.4,()=>{ focusOn(SPOTS.tv); playVideo(); });
 
 // ---------- Luis (look from his photo + Christmas fit) ----------
 const luis=new THREE.Group(); luis.position.set(.9,0,-.3); scene.add(luis);
@@ -368,6 +390,38 @@ cf.traverse(o=>{ if(o.isMesh) o.userData.onClick=()=>{ climbDir*=-1; climbPause=
   f.scale.setScalar(.5); f.position.set(x,.63,0); f.rotation.y=rot; f.userData.baseRot=rot; sign.add(f);
   updaters.push(idleFrog(f,ph)); updaters.push(makeHopper(f,.63)); });
 
+// ---------- fireworks over the ocean by the sunset (one show about every 5 s) ----------
+const fwDot=canvasTex(64,64,(x)=>{ const g=x.createRadialGradient(32,32,0,32,32,32); g.addColorStop(0,"rgba(255,255,255,1)"); g.addColorStop(.35,"rgba(255,255,255,.8)"); g.addColorStop(1,"rgba(255,255,255,0)"); x.fillStyle=g; x.fillRect(0,0,64,64); });
+const FW_COLORS=[0xff3b30,0xffd400,0x1ed760,0x4aa3ff,0xff4fd8,0xffffff,0xff8a1a];
+const fireworks=[]; const fwFlash=new THREE.PointLight(0xffffff,0,140); scene.add(fwFlash); let fwFlashLife=9;
+function launchFirework(){
+  const start=new THREE.Vector3(-26+Math.random()*40,0,-38-Math.random()*16), peak=7.5+Math.random()*5;
+  const rocket=new THREE.Mesh(new THREE.SphereGeometry(.25,8,6),new THREE.MeshBasicMaterial({color:0xfff2c0,fog:false})); rocket.position.copy(start); scene.add(rocket);
+  fireworks.push({type:"rocket",obj:rocket,vy:14,peak});
+}
+function burst(pos){
+  const n=160, geo=new THREE.BufferGeometry(), p=new Float32Array(n*3), v=[], col=new Float32Array(n*3);
+  const c1=new THREE.Color(FW_COLORS[Math.random()*FW_COLORS.length|0]), c2=new THREE.Color(FW_COLORS[Math.random()*FW_COLORS.length|0]);
+  for(let i=0;i<n;i++){ p.set([pos.x,pos.y,pos.z],i*3); const th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1), s=5+Math.random()*2.5;
+    v.push(new THREE.Vector3(Math.sin(ph)*Math.cos(th)*s,Math.cos(ph)*s,Math.sin(ph)*Math.sin(th)*s)); const c=i%2?c1:c2; col.set([c.r,c.g,c.b],i*3); }
+  geo.setAttribute('position',new THREE.BufferAttribute(p,3)); geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+  const pts=new THREE.Points(geo,new THREE.PointsMaterial({map:fwDot,size:1.6,vertexColors:true,transparent:true,opacity:1,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));
+  scene.add(pts); fireworks.push({type:'burst',obj:pts,v,life:0});
+  fwFlash.position.copy(pos); fwFlash.color.copy(c1); fwFlashLife=0;
+}
+let nextShow=2;
+updaters.push((t,dt)=>{
+  fwFlashLife+=dt; fwFlash.intensity=Math.max(0,2.5-fwFlashLife*5);
+  if(t>nextShow){ const k=1+(Math.random()*3|0); for(let i=0;i<k;i++) setTimeout(launchFirework,i*350); nextShow=t+5; }
+  for(let i=fireworks.length-1;i>=0;i--){ const f=fireworks[i];
+    if(f.type==='rocket'){ f.obj.position.y+=f.vy*dt; f.vy*=.985; if(f.obj.position.y>=f.peak||f.vy<2){ burst(f.obj.position.clone()); scene.remove(f.obj); fireworks.splice(i,1); } }
+    else if(f.type==='burst'){ f.life+=dt; const a=f.obj.geometry.attributes.position;
+      for(let j=0;j<f.v.length;j++){ f.v[j].multiplyScalar(.97); f.v[j].y-=4.5*dt; a.array[j*3]+=f.v[j].x*dt; a.array[j*3+1]+=f.v[j].y*dt; a.array[j*3+2]+=f.v[j].z*dt; }
+      a.needsUpdate=true; f.obj.material.opacity=Math.max(0,1-f.life/2.2);
+      if(f.life>2.2){ scene.remove(f.obj); f.obj.geometry.dispose(); f.obj.material.dispose(); fireworks.splice(i,1); } }
+    }
+});
+
 // ---------- lights ----------
 scene.add(new THREE.HemisphereLight(0xffd2b0,0x5a3a7a,.75));
 const sunL=new THREE.DirectionalLight(0xffb070,1.3); sunL.position.set(-8,10,-14); sunL.castShadow=true; sunL.shadow.mapSize.set(2048,2048);
@@ -375,13 +429,13 @@ Object.assign(sunL.shadow.camera,{left:-12,right:12,top:12,bottom:-12,near:1,far
 const fill=new THREE.DirectionalLight(0xc79bff,.45); fill.position.set(6,6,10); scene.add(fill);
 
 // ---------- camera orbit ----------
-let yaw=.25, pitch=.4, dist=13, tYaw=yaw, tPitch=pitch, tDist=dist; const target=new THREE.Vector3(0,1.3,-.6);
+let yaw=.25, pitch=.3, dist=(innerWidth<innerHeight?24:13), tYaw=yaw, tPitch=pitch, tDist=dist; const target=new THREE.Vector3(0,1.3,-.6);
 let drag=null;
 renderer.domElement.addEventListener('pointerdown',e=>{ drag={x:e.clientX,y:e.clientY,moved:0}; });
 addEventListener('pointermove',e=>{ hover(e); if(!drag) return; const dx=e.clientX-drag.x, dy=e.clientY-drag.y; drag.moved+=Math.abs(dx)+Math.abs(dy); drag.x=e.clientX; drag.y=e.clientY;
   tYaw=Math.max(-1.3,Math.min(1.3,tYaw-dx*.005)); tPitch=Math.max(.08,Math.min(1.15,tPitch+dy*.004)); });
 addEventListener('pointerup',e=>{ if(drag && drag.moved<6) pick(e); drag=null; });
-addEventListener('wheel',e=>{ tDist=Math.max(5,Math.min(18,tDist+e.deltaY*.006)); },{passive:true});
+addEventListener('wheel',e=>{ tDist=Math.max(3,Math.min(20,tDist+e.deltaY*.006)); },{passive:true});
 
 // ---------- picking ----------
 const ray=new THREE.Raycaster(), mouse=new THREE.Vector2();
@@ -391,7 +445,8 @@ const walkTarget=new THREE.Vector3(.9,0,-.3); let walking=false, luisHeading=0;
 const marker=new THREE.Mesh(new THREE.RingGeometry(.22,.3,32),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false}));
 marker.rotation.x=-Math.PI/2; marker.position.y=.02; scene.add(marker);
 function walkTo(p){ let x=p.x, z=p.z; const k=Math.hypot(x/7.0,z/5.8); if(k>1){ x/=k; z/=k; }   // stay on the island
-  walkTarget.set(x,0,z); walking=true; marker.position.set(x,.02,z); marker.material.opacity=.9; marker.scale.setScalar(1); }
+  walkTarget.set(x,0,z); walking=true; marker.position.set(x,.02,z); marker.material.opacity=.9; marker.scale.setScalar(1);
+  camMode='follow'; focusSpot=null; tDist=Math.min(Math.max(tDist,7),innerWidth<innerHeight?11:9); tPitch=Math.max(.3,Math.min(tPitch,.55)); }
 function pick(e){ const o=hit(e); if(o&&o.userData.onClick){ o.userData.onClick(); return; }
   if(e.target!==renderer.domElement) return;
   const g=ray.intersectObject(island,false); if(g.length) walkTo(g[0].point); }
@@ -407,9 +462,9 @@ function closePlayer(){ player.classList.remove('on'); slot.innerHTML=''; }
 player.querySelector('.x').onclick=closePlayer;
 let spApi=null;
 window.onSpotifyIframeApiReady=api=>{ spApi=api; };
-function playSpotify(){ closeVideo(); ptitle.textContent='SPOTIFY \u00B7 KONNICHIWA'; slot.innerHTML='<div id="sp-embed"></div>'; player.classList.add('on');
-  if(spApi){ spApi.createController(document.getElementById('sp-embed'),{uri:'spotify:track:'+MUSIC.spotifyTrack,width:'100%',height:152},c=>{ c.addListener('ready',()=>c.play()); }); }
-  else slot.innerHTML='<iframe src="https://open.spotify.com/embed/track/'+MUSIC.spotifyTrack+'" height="152" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>'; }
+function playSpotify(){ closeVideo(); ptitle.textContent="SPOTIFY \u00B7 ALBUM AGUA"; slot.innerHTML='<div id="sp-embed"></div>'; player.classList.add('on');
+  if(spApi){ spApi.createController(document.getElementById('sp-embed'),{uri:"spotify:album:"+MUSIC.spotifyAlbum,width:"100%",height:380},()=>{}); }
+  else slot.innerHTML='<iframe src="https://open.spotify.com/embed/album/'+MUSIC.spotifyAlbum+'" height="380" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>'; }
 function playApple(){ closeVideo(); ptitle.textContent='APPLE MUSIC \u00B7 PANAM\u00C1'; player.classList.add('on');
   slot.innerHTML='<iframe src="'+MUSIC.appleEmbed+'" height="175" allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"></iframe>'; }
 const vslot=document.getElementById('video-slot');
@@ -428,6 +483,9 @@ load(); setInterval(load,60000);
 // ---------- loop ----------
 const clock=new THREE.Clock(); let last=0;
 function frame(){ const t=clock.getElapsedTime(), dt=Math.min(.05,t-last); last=t;
+  if(camMode==='follow') target.lerp(new THREE.Vector3(luis.position.x,1.2,luis.position.z),.06);
+  else if(camMode==='focus'&&focusSpot) target.lerp(focusSpot.pos,.07);
+  clickSigns.forEach(({sp,y},i)=>{ sp.position.y=y+Math.abs(Math.sin(t*3+i))*.18; });
   yaw+=(tYaw-yaw)*.08; pitch+=(tPitch-pitch)*.08; dist+=(tDist-dist)*.08;
   camera.position.set(target.x+Math.sin(yaw)*Math.cos(pitch)*dist,target.y+Math.sin(pitch)*dist,target.z+Math.cos(yaw)*Math.cos(pitch)*dist); camera.lookAt(target);
   if(SHOT) shown=goal; shown+=(goal-shown)*.04; if(Math.abs(goal-shown)<1) shown=goal; drawCounter(shown);
@@ -445,6 +503,9 @@ function frame(){ const t=clock.getElapsedTime(), dt=Math.min(.05,t-last); last=
     const sw=Math.sin(t*10); legL.rotation.x=sw*.55; legR.rotation.x=-sw*.55; armL.rotation.x=-sw*.5; armR.rotation.x=sw*.5;
     luis.position.y=Math.abs(Math.cos(t*10))*.05; luis.rotation.y=luisHeading;
   } else {
+    if(walking && camMode==='follow'){ // just arrived: if next to a poster/TV/sign, zoom in on it
+      let best=null, bd=2.8; for(const s of Object.values(SPOTS)){ const dd=Math.hypot(s.pos.x-luis.position.x,s.pos.z-luis.position.z); if(dd<bd){ bd=dd; best=s; } }
+      if(best) focusOn(best); }
     walking=false; legL.rotation.x*=.8; legR.rotation.x*=.8; armL.rotation.x*=.8; armR.rotation.x*=.8;
     luis.rotation.y=luisHeading+Math.sin(t*.8)*.25; luis.position.y=Math.abs(Math.sin(beat/2))*.03;
   }
