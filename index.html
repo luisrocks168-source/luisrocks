@@ -35,11 +35,25 @@
   #video{inset:0;margin:auto;width:min(960px,94vw);height:fit-content;padding:40px 12px 12px;background:#000e}
   #video .frame{position:relative;width:100%;padding-top:56.25%}
   #video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:8px}
+  .open{display:block;margin-top:10px;text-align:center;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:11px 10px;border-radius:999px}
+  #vault{inset:0;margin:auto;width:min(400px,92vw);height:fit-content;max-height:92vh;overflow:auto;padding:26px 22px 20px;text-align:center;border-color:#ff2a4a77;box-shadow:0 0 70px #ff2a4a55;transform:scale(.96);z-index:12}
+  #vault.on{transform:none}
+  #vault .lock{font-size:40px;line-height:1}
+  #vault .tag{font-size:10px;letter-spacing:.3em;color:#ff5a6e;font-weight:700;margin-top:10px}
+  #vault h2{font:26px "Archivo Black",sans-serif;margin:6px 0 8px}
+  #vault p{font-size:14px;color:var(--dim);line-height:1.45;margin-bottom:14px}
+  #vault input[type=text]{width:100%;padding:12px 14px;font:16px Inter,sans-serif;color:var(--ink);background:#0007;border:1px solid #ffffff33;border-radius:10px;outline:none}
+  #vault input[type=text]:focus{border-color:#ff5a6e}
+  #vault label{display:flex;gap:8px;align-items:flex-start;text-align:left;font-size:12px;color:var(--dim);margin:12px 0;line-height:1.4;cursor:pointer}
+  #vault label input{margin-top:2px;accent-color:#e0302f;flex:none}
+  #vault .go{width:100%;padding:13px;border:0;border-radius:999px;background:linear-gradient(90deg,#e0302f,#ff4f6a);color:#fff;font:700 16px Inter,sans-serif;cursor:pointer}
+  #vault .go:disabled{opacity:.6;cursor:wait}
+  #vault-msg{min-height:18px;font-size:13px;color:var(--gold);margin-top:10px}
 </style>
 </head>
 <body>
 <div id="loader"><div><div class="pct" id="pct">0%</div><div class="bar"><i id="bar"></i></div><div class="msg" id="msg">Plantando palmeras</div></div></div>
-<div id="hint">Arrastra para mirar &#xB7; toca la arena para caminar &#xB7; toca los posters, la TV, las ranas y al cocodrilo</div>
+<div id="hint">Arrastra para mirar &#xB7; toca la arena para caminar &#xB7; toca los posters, la TV, las ranas y la puerta roja</div>
 
 <div id="card" class="panel">
   <button class="x" aria-label="Cerrar">&#xD7;</button>
@@ -59,8 +73,29 @@
   </div>
 </div>
 
-<div id="player" class="panel"><span class="t" id="player-t">AHORA SONANDO</span><button class="x" aria-label="Cerrar">&#xD7;</button><div id="player-slot"></div></div>
-<div id="video" class="panel"><button class="x" aria-label="Cerrar">&#xD7;</button><div class="frame" id="video-slot"></div></div>
+<div id="player" class="panel"><span class="t" id="player-t">AHORA SONANDO</span><button class="x" aria-label="Cerrar">&#xD7;</button><div id="player-slot"></div><a id="player-open" class="open sp" href="#" target="_blank" rel="noopener">Abrir en Spotify</a></div>
+<div id="video" class="panel"><button class="x" aria-label="Cerrar">&#xD7;</button><div class="frame" id="video-slot"></div><a id="video-open" class="open yt" href="#" target="_blank" rel="noopener">&#x25B6; Ver en la app de YouTube</a></div>
+
+<div id="vault" class="panel" role="dialog" aria-labelledby="vault-h">
+  <button class="x" aria-label="Cerrar">&#xD7;</button>
+  <form id="vault-form" novalidate>
+    <div class="lock">&#x1F512;</div>
+    <div class="tag">PUERTA ROJA</div>
+    <h2 id="vault-h">M&#xFA;sica unreleased</h2>
+    <p>Canciones que nadie ha escuchado todav&#xED;a. Deja tu correo o tu n&#xFA;mero y te mando el link antes que a nadie.</p>
+    <input type="text" id="vault-contact" autocomplete="email" placeholder="tu@correo.com o tu n&#xFA;mero" aria-label="Correo o n&#xFA;mero de tel&#xE9;fono">
+    <label><input type="checkbox" id="vault-consent"> Acepto recibir correos o mensajes de Luis Sandoval con m&#xFA;sica nueva y estrenos. Me puedo dar de baja cuando quiera.</label>
+    <button type="submit" class="go" id="vault-go">DESBLOQUEAR &#x1F513;</button>
+    <div id="vault-msg" aria-live="polite"></div>
+  </form>
+  <div id="vault-done" hidden>
+    <div class="lock">&#x1F513;</div>
+    <div class="tag">EST&#xC1;S DENTRO</div>
+    <h2>&#xA1;Bienvenido!</h2>
+    <p id="vault-done-p">Te llega el link de la canci&#xF3;n. Y vas a ser de los primeros en enterarte de cada estreno.</p>
+    <a class="open sp" href="https://open.spotify.com/album/4Cp2e5nRklE1uYIFw5WdL5" target="_blank" rel="noopener">Mientras tanto: escucha AGUA en Spotify</a>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
 <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
@@ -74,6 +109,9 @@ const MUSIC = {
   appleArt: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/1c/57/aa/1c57aab3-c4fd-8a24-4d06-b7083d2a0ade/885288242478.jpg/600x600bb.jpg',
   youtubeId: 'V-500lsoBvs'                    // KONNICHIWA (Video Oficial)
 };
+// Red door sign-ups: paste the form endpoint here (Formspree, Laylo/Zapier webhook, Google Sheets script...).
+// While it's empty the door works, but the form says "opening soon" and nothing is collected.
+const SIGNUP = { endpoint: '' };
 const SHOT=new URLSearchParams(location.search).has("shot"); if(SHOT) document.getElementById("hint").remove();
 const fmt = n => Math.round(n).toLocaleString('en-US');
 
@@ -271,7 +309,8 @@ const SPOTS={
   spotify:{pos:new THREE.Vector3(-5.0,1.95,-.6), yaw:.75,  w:1.5},
   apple:  {pos:new THREE.Vector3(-5.4,1.95,1.6), yaw:1.05, w:1.5},
   tv:     {pos:new THREE.Vector3(4.9,2.15,.4),   yaw:-.95, w:2.2},
-  views:  {pos:new THREE.Vector3(3.5,3.0,-4.25), yaw:-.05, w:4.2}
+  views:  {pos:new THREE.Vector3(3.5,3.0,-4.25), yaw:-.05, w:4.2},
+  door:   {pos:new THREE.Vector3(5.4,1.8,2.4),   yaw:-.9,  w:2.4}
 };
 function fitDist(w){ const hf=2*Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.aspect); return Math.max(3.2,(w*1.35)/(2*Math.tan(hf/2))); }
 let camMode='free', focusSpot=null;
@@ -390,6 +429,37 @@ cf.traverse(o=>{ if(o.isMesh) o.userData.onClick=()=>{ climbDir*=-1; climbPause=
   f.scale.setScalar(.5); f.position.set(x,.63,0); f.rotation.y=rot; f.userData.baseRot=rot; sign.add(f);
   updaters.push(idleFrog(f,ph)); updaters.push(makeHopper(f,.63)); });
 
+// ---------- red door: unreleased music (collects emails / phone numbers) ----------
+const DOOR={x:5.4,z:2.4,ry:-.9};
+const door=new THREE.Group(); door.position.set(DOOR.x,0,DOOR.z); door.rotation.y=DOOR.ry; scene.add(door);
+const frameM=mat(0x2a1410,{roughness:.9});
+box(.14,2.62,.22,frameM,-.7,1.31,0,door); box(.14,2.62,.22,frameM,.7,1.31,0,door); box(1.54,.16,.24,frameM,0,2.68,0,door);
+box(1.8,.08,.8,0x77706a,0,.04,.2,door,{roughness:1});                                  // stone step
+box(1.26,2.52,.04,0x120608,0,1.3,-.07,door);                                           // back wall
+const portal=new THREE.Mesh(new THREE.PlaneGeometry(1.26,2.52),new THREE.MeshBasicMaterial({color:0xff2a4a})); portal.position.set(0,1.3,-.045); door.add(portal);
+const hinge=new THREE.Group(); hinge.position.set(-.62,0,.02); door.add(hinge);
+box(1.24,2.5,.08,mat(0xc8102e,{roughness:.45,emissive:0x400008,emissiveIntensity:.6}),.62,1.29,0,hinge);
+[1.84,.74].forEach(y=>box(.9,.82,.03,mat(0x9a0c22,{roughness:.5}),.62,y,.05,hinge));
+const knob=new THREE.Mesh(new THREE.SphereGeometry(.065,12,10),mat(0xffd400,{metalness:.9,roughness:.2})); knob.position.set(1.08,1.22,.1); knob.castShadow=true; hinge.add(knob);
+const neonTex=canvasTex(640,240,(x)=>{ x.fillStyle='#140508'; x.fillRect(0,0,640,240); x.textAlign='center'; x.shadowColor='#ff2a4a'; x.shadowBlur=26; x.fillStyle='#ff6a7c';
+  x.font='bold 66px "Archivo Black",Inter,sans-serif'; x.fillText('AQU\u00CD PARA',320,102,600); x.font='bold 54px "Archivo Black",Inter,sans-serif'; x.fillText('M\u00DASICA UNRELEASED',320,188,600); x.shadowBlur=0; });
+if(document.fonts) document.fonts.ready.then(()=>{ neonTex.userData.draw(neonTex.userData.x); neonTex.needsUpdate=true; });
+box(1.86,.76,.08,0x1a0a0c,0,3.2,0,door); [-.6,.6].forEach(x=>box(.05,.14,.05,0x111,x,2.8,0,door));
+const neon=new THREE.Mesh(new THREE.PlaneGeometry(1.76,.66),new THREE.MeshBasicMaterial({map:neonTex})); neon.position.set(0,3.2,.05); door.add(neon);
+const doorLight=new THREE.PointLight(0xff2a4a,1.2,5); doorLight.position.set(0,1.7,.9); door.add(doorLight);
+const enterDoor=()=>{ focusOn(SPOTS.door); openVault(); };
+door.traverse(o=>{ if(o.isMesh) o.userData.onClick=enterDoor; }); clickables.push(door);
+clickSign('\u{1F512} CLICK PARA ENTRAR','#b3001b',DOOR.x,4.1,DOOR.z,enterDoor);
+// walk Luis up to the door -> it creaks open a little and the sign-up pops up
+const doorFront=new THREE.Vector3(DOOR.x+Math.sin(DOOR.ry)*1.1,0,DOOR.z+Math.cos(DOOR.ry)*1.1); let nearDoor=false;
+updaters.push((t,dt)=>{
+  const d=Math.hypot(luis.position.x-doorFront.x,luis.position.z-doorFront.z);
+  if(d<1.3&&!nearDoor){ nearDoor=true; if(!unlocked) openVault(); } else if(d>2.4) nearDoor=false;
+  const want=unlocked?-1.25:(nearDoor?-.22:0); hinge.rotation.y+=(want-hinge.rotation.y)*Math.min(1,dt*3);
+  doorLight.intensity=(1+Math.sin(t*2.2)*.35)*(nearDoor||unlocked?1.8:1);
+  portal.material.color.setHSL(.98,1,.55+Math.sin(t*3)*.08);
+});
+
 // ---------- fireworks over the ocean by the sunset (one show about every 5 s) ----------
 const fwDot=canvasTex(64,64,(x)=>{ const g=x.createRadialGradient(32,32,0,32,32,32); g.addColorStop(0,"rgba(255,255,255,1)"); g.addColorStop(.35,"rgba(255,255,255,.8)"); g.addColorStop(1,"rgba(255,255,255,0)"); x.fillStyle=g; x.fillRect(0,0,64,64); });
 const FW_COLORS=[0xff3b30,0xffd400,0x1ed760,0x4aa3ff,0xff4fd8,0xffffff,0xff8a1a];
@@ -457,21 +527,46 @@ const card=document.getElementById('card'), player=document.getElementById('play
 let wave=0;
 function openCard(){ card.classList.add('on'); wave=1.6; }
 card.querySelector('.x').onclick=()=>card.classList.remove('on');
-const slot=document.getElementById('player-slot'), ptitle=document.getElementById('player-t');
+const slot=document.getElementById('player-slot'), ptitle=document.getElementById('player-t'), popen=document.getElementById('player-open');
+function setOpen(label,href,cls){ popen.textContent=label; popen.href=href; popen.className='open '+cls; }
+document.getElementById('video-open').href='https://www.youtube.com/watch?v='+MUSIC.youtubeId;
 function closePlayer(){ player.classList.remove('on'); slot.innerHTML=''; }
 player.querySelector('.x').onclick=closePlayer;
 let spApi=null;
 window.onSpotifyIframeApiReady=api=>{ spApi=api; };
-function playSpotify(){ closeVideo(); ptitle.textContent="SPOTIFY \u00B7 ALBUM AGUA"; slot.innerHTML='<div id="sp-embed"></div>'; player.classList.add('on');
+function playSpotify(){ closeVideo(); closeVault(); ptitle.textContent="SPOTIFY \u00B7 ALBUM AGUA"; setOpen('\u{1F3A7} Abrir en la app de Spotify','https://open.spotify.com/album/'+MUSIC.spotifyAlbum,'sp'); slot.innerHTML='<div id="sp-embed"></div>'; player.classList.add('on');
   if(spApi){ spApi.createController(document.getElementById('sp-embed'),{uri:"spotify:album:"+MUSIC.spotifyAlbum,width:"100%",height:380},()=>{}); }
   else slot.innerHTML='<iframe src="https://open.spotify.com/embed/album/'+MUSIC.spotifyAlbum+'" height="380" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>'; }
-function playApple(){ closeVideo(); ptitle.textContent='APPLE MUSIC \u00B7 PANAM\u00C1'; player.classList.add('on');
+function playApple(){ closeVideo(); closeVault(); ptitle.textContent='APPLE MUSIC \u00B7 PANAM\u00C1'; setOpen('\u{1F3A7} Abrir en Apple Music',MUSIC.appleEmbed.replace('embed.music','music'),'am'); player.classList.add('on');
   slot.innerHTML='<iframe src="'+MUSIC.appleEmbed+'" height="175" allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"></iframe>'; }
 const vslot=document.getElementById('video-slot');
-function playVideo(){ closePlayer(); video.classList.add('on'); vslot.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+MUSIC.youtubeId+'?autoplay=1&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'; }
+function playVideo(){ closePlayer(); closeVault(); video.classList.add('on'); vslot.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+MUSIC.youtubeId+'?autoplay=1&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'; }
 function closeVideo(){ video.classList.remove('on'); vslot.innerHTML=''; }
 video.querySelector('.x').onclick=closeVideo;
-addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeVideo(); closePlayer(); card.classList.remove('on'); } });
+const vault=document.getElementById('vault'), vForm=document.getElementById('vault-form'), vDone=document.getElementById('vault-done');
+const vInput=document.getElementById('vault-contact'), vConsent=document.getElementById('vault-consent'), vGo=document.getElementById('vault-go'), vMsg=document.getElementById('vault-msg');
+let unlocked=false; try{ unlocked=localStorage.getItem('lsVault')==='1'; }catch(e){}
+function showVault(){ vForm.hidden=unlocked; vDone.hidden=!unlocked; }
+function openVault(){ closeVideo(); closePlayer(); vMsg.textContent=''; showVault(); vault.classList.add('on');
+  if(!unlocked && matchMedia('(pointer:fine)').matches) setTimeout(()=>vInput.focus(),300); }
+function closeVault(){ vault.classList.remove('on'); }
+vault.querySelector('.x').onclick=closeVault;
+vForm.addEventListener('submit',async e=>{ e.preventDefault();
+  const raw=vInput.value.trim(), digits=raw.replace(/\D/g,'');
+  const isEmail=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(raw);
+  const isPhone=!isEmail && /^\+?[\d\s().-]+$/.test(raw) && digits.length>=7 && digits.length<=15;
+  if(!isEmail&&!isPhone){ vMsg.textContent='Escribe un correo o un n\u00FAmero v\u00E1lido'; vInput.focus(); return; }
+  if(!vConsent.checked){ vMsg.textContent='Marca la casilla para continuar'; return; }
+  if(!SIGNUP.endpoint){ vMsg.textContent='\u{1F6A7} La puerta abre muy pronto. \u00A1Vuelve en unos d\u00EDas!'; return; }
+  vGo.disabled=true; vMsg.textContent='Abriendo la puerta\u2026';
+  try{ const fd=new FormData(); fd.append(isEmail?'email':'phone',raw); fd.append('contact',raw); fd.append('type',isEmail?'email':'phone'); fd.append('source','puerta-roja'); fd.append('consent','yes');
+    await fetch(SIGNUP.endpoint,{method:'POST',body:fd,mode:'no-cors'});
+    unlocked=true; try{ localStorage.setItem('lsVault','1'); }catch(e){}
+    document.getElementById('vault-done-p').textContent=(isEmail?'Revisa tu correo: ':'Revisa tus mensajes: ')+'te llega el link de la canci\u00F3n. Y vas a ser de los primeros en enterarte de cada estreno.';
+    showVault();
+  }catch(err){ vMsg.textContent='No se pudo conectar. Intenta otra vez.'; }
+  vGo.disabled=false; });
+addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeVideo(); closePlayer(); closeVault(); card.classList.remove('on'); } });
 
 // ---------- stats ----------
 let shown=0, goal=FALLBACK.views;
@@ -514,8 +609,8 @@ function frame(){ const t=clock.getElapsedTime(), dt=Math.min(.05,t-last); last=
   armL.rotation.z=-Math.sin(beat/2)*.12;
   ampL.material.emissiveIntensity=1.5+Math.sin(beat);
   // crocodile walks a loop in front of the studio
-  const ct=t*.12, cx=.6+Math.cos(ct)*3.4, cz=2.2+Math.sin(ct)*1.4;
-  croc.position.set(cx,0,cz); croc.rotation.y=Math.atan2(-Math.sin(ct)*3.4,Math.cos(ct)*1.4);
+  const ct=t*.12, cx=.4+Math.cos(ct)*3.0, cz=2.2+Math.sin(ct)*1.4;
+  croc.position.set(cx,0,cz); croc.rotation.y=Math.atan2(-Math.sin(ct)*3.0,Math.cos(ct)*1.4);
   const stride=Math.sin(t*6); legs.forEach((l,i)=>{ l.rotation.x=(i===0||i===3?stride:-stride)*.5; });
   tail.forEach((s,i)=>{ s.rotation.y=Math.sin(t*3-i*.7)*.25; }); cBody.rotation.y=Math.sin(t*3)*.06;
   if(snap>0){ snap-=dt; jaw.rotation.x=Math.abs(Math.sin(snap*14))*.6; } else jaw.rotation.x=(Math.sin(t*.8)>.96)?.35:0;
